@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Main from "../Layouts/Main";
 import { Inertia } from "@inertiajs/inertia";
 import { Search } from "lucide-react";
@@ -8,6 +8,8 @@ import { faker } from "@faker-js/faker";
 
 export default function PostIndex({ posts, session }) {
     const { author } = usePage().props;
+    const [post, setPost] = useState(posts.data);
+    const [text, setText] = useState("");
     const category = [
         { name: "Technology" },
         { name: "Lifestyle" },
@@ -17,7 +19,20 @@ export default function PostIndex({ posts, session }) {
 
     const image = faker.image.url();
 
-    console.log(author);
+    const searching = (e) => {
+        const searchedPost = e.target.value.toLowerCase();
+        setText(searchedPost);
+    };
+
+    const posted = post.filter((item) => {
+        let lowerTitle = item.title.toLowerCase();
+        if (text === "") {
+            return post;
+        } else if (lowerTitle.startsWith(text)) {
+            return lowerTitle.startsWith(text);
+        }
+    });
+
     return (
         <Main>
             <Head title="Welcome to Posterer" />
@@ -31,8 +46,9 @@ export default function PostIndex({ posts, session }) {
                         <input
                             className="p-2 pl-10  w-full outline-slate-200 outline outline-1 rounded-md"
                             type="text"
-                            placeholder="Search"
+                            placeholder="Search Post"
                             aria-label="Search"
+                            onChange={searching}
                         />
                     </form>
                 </div>
@@ -58,8 +74,8 @@ export default function PostIndex({ posts, session }) {
                         </div>
                     </aside>
                     <div className="w-full ">
-                        {posts.data.length > 0 ? (
-                            posts.data.map((post, index) => (
+                        {posted.length > 0 ? (
+                            posted.map((post, index) => (
                                 <div
                                     className="w-full shadow-md min-h-52 p-4 flex flex-col my-4 rounded-md"
                                     key={index}
